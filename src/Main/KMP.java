@@ -1,5 +1,7 @@
 package Main;
 
+import java.util.ArrayList;
+
 /**
  * A new Main.KMP instance is created for every substring search performed. Both the
  * pattern and the text are passed to the constructor and the search method. You
@@ -7,46 +9,131 @@ package Main;
  * search method to perform the search itself.
  */
 public class KMP {
-	private int searchTable[];
-	public KMP(String pattern, String text) {
-		searchTable = generateKMPSearchTable(pattern);
-	}
+    private int[] searchTable;
+    private String toSearch;
+    private String searchPattern;
+    public Long timeTaken;
+    public int comparisons;
+    public KMP(String pattern, String text) {
+        this.searchTable = generateKMPSearchTable(pattern);
+        this.toSearch = text;
+        this.searchPattern = pattern;
+    }
 
-	/**
-	 * Generates a KMP search table
-	 * @param pattern the pattern that is having a table generated
-	 * @return the generated table
-	 */
-	static public int[] generateKMPSearchTable(String pattern) {
-		int[] toReturn = new int[pattern.length()];
-		char[] charPattern = pattern.toCharArray();
-		int i = 0;
-		int j = 0;
-		while(i<toReturn.length){
-			if(i==0){
-				toReturn[i] = 0;
-				i++;
-			} else if(charPattern[i]==charPattern[j]){
-				toReturn[i] = j+1;
-				i++;
-				j++;
-			} else{
-				toReturn[i]=0;
-				j = 0;
-				i++;
-			}
-		}
-		return toReturn;
-	}
+    /**
+     * Generates a KMP search table
+     *
+     * @param pattern the pattern that is having a table generated
+     * @return the generated table
+     */
+    public static int[] generateKMPSearchTable(String pattern) {
+        int[] toReturn = new int[pattern.length()];
+        char[] charPattern = pattern.toCharArray();
+        int i = 0;
+        int j = 0;
+        while (i < toReturn.length) {
+            if (i == 0) {
+                toReturn[i] = 0;
+                i++;
+            } else if (charPattern[i] == charPattern[j]) {
+                toReturn[i] = j + 1;
+                i++;
+                j++;
+            } else {
+                j = 0;
+                if (charPattern[i] == charPattern[j]) {
+                    toReturn[i] = j + 1;
+                    i++;
+                    j++;
+                } else {
+                    toReturn[i] = 0;
+                    i++;
+                }
 
-	/**
-	 * Perform Main.KMP substring search on the given text with the given pattern.
-	 * 
-	 * This should return the starting index of the first substring match if it
-	 * exists, or -1 if it doesn't.
-	 */
-	public int search(String pattern, String text) {
-		// TODO fill this in.
-		return -1;
-	}
+            }
+        }
+        return toReturn;
+    }
+
+    /**
+     * Perform Main.KMP substring search on the given text with the given pattern.
+     * <p>
+     * This should return the starting index of the first substring match if it
+     * exists, or -1 if it doesn't.
+     */
+    public int search() {
+        long startTime = System.nanoTime();
+        int i = 0;
+        int j = 0;
+        int stepsTaken = 0;
+        char[] toSearch = this.toSearch.toCharArray();
+        char[] searchPattern = this.searchPattern.toCharArray();
+        while (i < toSearch.length) {
+            stepsTaken++;
+            if (toSearch[i] == searchPattern[j]) {
+                if (j == searchPattern.length - 1) {
+                    timeTaken=(((System.nanoTime() - startTime)/1000));
+                    comparisons = stepsTaken;
+                    return i - j;
+                }
+                i++;
+                j++;
+            } else {
+                if(j>0){
+                    j = searchTable[j];
+                    stepsTaken++;
+                }
+                if (toSearch[i] == searchPattern[j]) {
+                    i++;
+                    j++;
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        timeTaken=(((System.nanoTime() - startTime)/1000));
+        comparisons = stepsTaken;
+        return -1;
+    }
+
+    public int bruteForce() {
+        long startTime = System.nanoTime();
+        int i = 0;
+        int j = 0;
+        int stepsTaken = 0;
+        char[] toSearch = this.toSearch.toCharArray();
+        char[] searchPattern = this.searchPattern.toCharArray();
+        int currentSweepStart;
+        while (i < toSearch.length) {
+            stepsTaken++;
+            if (toSearch[i] == searchPattern[j]) {
+                currentSweepStart = i;
+                while (j < searchPattern.length) {
+                    stepsTaken++;
+                    if (toSearch[i] == searchPattern[j]) {
+                        if (j == searchPattern.length - 1) {
+                            timeTaken=(((System.nanoTime() - startTime)/1000));
+                            comparisons = stepsTaken;
+                            return i - j;
+                        }
+                        i++;
+                        j++;
+                    } else {
+                        stepsTaken++;
+                        i = currentSweepStart + 1;
+                        j = 0;
+                        break;
+                    }
+                }
+            } else {
+                i++;
+            }
+        }
+        timeTaken=(((System.nanoTime() - startTime)/1000));
+        comparisons = stepsTaken;
+        return -1;
+    }
+
+
 }
