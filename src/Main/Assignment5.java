@@ -1,5 +1,7 @@
 package Main;
 
+import Main.HuffmanEncoding.HuffmanCoding;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
