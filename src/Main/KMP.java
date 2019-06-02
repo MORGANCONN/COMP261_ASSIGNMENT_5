@@ -68,6 +68,9 @@ public class KMP {
         int stepsTaken = 0;
         char[] toSearch = this.toSearch.toCharArray();
         char[] searchPattern = this.searchPattern.toCharArray();
+        if(searchPattern.length==0){
+            return -1;
+        }
         while (i < toSearch.length) {
             stepsTaken++;
             if (toSearch[i] == searchPattern[j]) {
