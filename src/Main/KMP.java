@@ -14,6 +14,7 @@ public class KMP {
     private String searchPattern;
     public Long timeTaken;
     public int comparisons;
+
     public KMP(String pattern, String text) {
         this.searchTable = generateKMPSearchTable(pattern);
         this.toSearch = text;
@@ -27,12 +28,12 @@ public class KMP {
      * @return the generated table
      */
     public static int[] generateKMPSearchTable(String pattern) {
-        int[] toReturn = new int[pattern.length()];
+        int[] toReturn = new int[pattern.length() + 1];
         char[] charPattern = pattern.toCharArray();
         int i = 0;
         int j = 0;
-        while (i < toReturn.length) {
-            if (i == 0) {
+        while (i < toReturn.length - 1) {
+            if (i == 0 || i == 1) {
                 toReturn[i] = 0;
                 i++;
             } else if (charPattern[i] == charPattern[j]) {
@@ -52,6 +53,9 @@ public class KMP {
 
             }
         }
+        for (int x = toReturn.length - 2; x >= 0; x--) {
+            toReturn[x + 1] = toReturn[x];
+        }
         return toReturn;
     }
 
@@ -67,35 +71,44 @@ public class KMP {
         int j = 0;
         int stepsTaken = 0;
         char[] toSearch = this.toSearch.toCharArray();
-        char[] searchPattern = this.searchPattern.toCharArray();
-        if(searchPattern.length==0){
+        char[] searchPattern = new char[this.searchPattern.length() + 1];
+        char[] toAdd = this.searchPattern.toCharArray();
+        if (toAdd.length == 0) {
             return -1;
         }
+        for (int q = 1; q < this.searchPattern.length() + 1; q++) {
+            searchPattern[q] = toAdd[q - 1];
+        }
+        if (searchPattern.length == 0) {
+            return -1;
+        }
+
         while (i < toSearch.length) {
             stepsTaken++;
-            if (toSearch[i] == searchPattern[j]) {
+            if (toSearch[i] == searchPattern[j + 1]) {
+                i++;
+                j++;
                 if (j == searchPattern.length - 1) {
-                    timeTaken=(((System.nanoTime() - startTime)/1000));
+                    timeTaken = (((System.nanoTime() - startTime) / 1000));
                     comparisons = stepsTaken;
                     return i - j;
                 }
-                i++;
-                j++;
             } else {
-                if(j>0){
+                if (j > 0) {
                     j = searchTable[j];
                     stepsTaken++;
                 }
-                if (toSearch[i] == searchPattern[j]) {
+                if (toSearch[i] == searchPattern[j+1]) {
                     i++;
                     j++;
                 } else {
                     i++;
+
                 }
             }
         }
 
-        timeTaken=(((System.nanoTime() - startTime)/1000));
+        timeTaken = (((System.nanoTime() - startTime) / 1000));
         comparisons = stepsTaken;
         return -1;
     }
@@ -116,7 +129,7 @@ public class KMP {
                     stepsTaken++;
                     if (toSearch[i] == searchPattern[j]) {
                         if (j == searchPattern.length - 1) {
-                            timeTaken=(((System.nanoTime() - startTime)/1000));
+                            timeTaken = (((System.nanoTime() - startTime) / 1000));
                             comparisons = stepsTaken;
                             return i - j;
                         }
@@ -133,7 +146,7 @@ public class KMP {
                 i++;
             }
         }
-        timeTaken=(((System.nanoTime() - startTime)/1000));
+        timeTaken = (((System.nanoTime() - startTime) / 1000));
         comparisons = stepsTaken;
         return -1;
     }

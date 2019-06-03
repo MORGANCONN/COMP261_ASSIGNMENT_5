@@ -77,6 +77,7 @@ public class HuffmanCoding {
 	public String decode(String encoded) {
 		Node current = tree;
 		StringBuilder toReturn = new StringBuilder();
+		HashSet<String> paths = new HashSet<>();
 		for(int i = 0;i<encoded.length();i++){
 			if(encoded.charAt(i)=='0'){
 				current = current.getLeft();
@@ -84,12 +85,18 @@ public class HuffmanCoding {
 				current = current.getRight();
 			}
 			if(current.getLeft()==null&&current.getRight()==null){
+				paths.add("Char: " + current.getCharacter() + " Path: " + current.getPath() + " Frequency: " + current.getFrequency() + "\n");
 				toReturn.append(current.getCharacter());
 				current = tree;
 			}
 		}
+		for(String S : paths){
+			System.out.println(S);
+		}
 		return toReturn.toString();
 	}
+
+
 
 	/**
 	 * The getInformation method is here for your convenience, you don't need to
